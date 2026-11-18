@@ -1,0 +1,57 @@
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: cs_ai_agent
+      MYSQL_USER: cs_ai_agent
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-cs_ai_agent_password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-cs_ai_agent_root_password}
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      # 本项目权限查询使用 SELECT DISTINCT ... ORDER BY 非选择列，
+      # MySQL 8.4 默认 sql_mode 含 ONLY_FULL_GROUP_BY 会报 Error 3065，
+      # 导致登录接口失败。此处显式关闭该项，保留其余严格模式。
+      - --sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u\"$${MYSQL_USER}\" -p\"$${MYSQL_PASSWORD}\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    restart: unless-stopped
+    volumes:
+      - qdrant-data:/qdrant/storage
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+
+  agent-desk:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: comeonfan08-cmd/agent-desk:latest
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    ports:
+      - "8083:8083"
+    volumes:
+      - agent-desk-data:/app/data
+      - ./docker/agent-desk.yaml:/app/config/config.yaml:ro
+    environment:
+      TZ: Asia/Shanghai
+
+volumes:
+  mysql-data:
+  qdrant-data:
+  agent-desk-data:

@@ -1,0 +1,8 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="客服 Agent">
+  <rect width="64" height="64" rx="14" fill="#14284B"/>
+  <rect x="11" y="13" width="42" height="30" rx="10" stroke="#FFFFFF" stroke-width="3.2"/>
+  <path d="M21 43 L21 53 L32 43 Z" fill="#FFFFFF"/>
+  <circle cx="24" cy="28" r="2.9" fill="#5BE59A"/>
+  <circle cx="32" cy="28" r="2.9" fill="#FFFFFF"/>
+  <circle cx="40" cy="28" r="2.9" fill="#FFFFFF"/>
+</svg>

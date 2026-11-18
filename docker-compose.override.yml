@@ -1,0 +1,5 @@
+# 本地运行覆盖配置：官方预构建镜像仅有 linux/amd64，这里让 agent-desk 走 amd64 模拟。
+# mysql 与 qdrant 保留原生 arm64，避免不必要的性能损失。
+services:
+  agent-desk:
+    platform: linux/amd64
